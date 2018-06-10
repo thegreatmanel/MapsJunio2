@@ -1,9 +1,11 @@
 package com.ejemplo.manu.mapsjunio2;
 
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 
@@ -22,9 +24,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
+    private Location mLastLocation;
     private final LatLng MARCA = new LatLng(42.237023, -8.717944);
     private final LatLng CENTRO = new LatLng(42.237558, -8.717285);
-    Location marcaUbicacion =new Location("mi marca");
+    Location marcaUbicacion = new Location("mi marca");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,7 +90,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        if (mLastLocation != null) {
+            System.out.println("Latitud: " + mLastLocation.getLatitude() + "\nLongitud: " + mLastLocation.getLongitude());
+        }
     }
 
     @Override
