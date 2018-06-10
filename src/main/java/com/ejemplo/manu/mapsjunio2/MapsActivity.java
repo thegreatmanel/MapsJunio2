@@ -112,22 +112,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         LOCATION_REQUEST_CODE);
             }
 
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.ACCESS_COARSE_LOCATION)) {
-
-                // Show an expanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
-
-            } else {
-
-                // No explanation needed, we can request the permission.
-
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
-                        LOCATION_REQUEST_CODE);
-            }
-
         }
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         if (mLastLocation != null) {
@@ -150,7 +134,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         try {
             int distanciaPremio = (int) marcaUbicacion.distanceTo(mLastLocation);
             Toast.makeText(this, "Distancia al premio = " + distanciaPremio + " m", Toast.LENGTH_SHORT).show();
-            if (distanciaPremio <= 10000) {
+            if (distanciaPremio <= 2000) {
                 mMap.addMarker(new MarkerOptions().position(MARCA).title("Premio"));
             }
         }catch (NullPointerException e){
@@ -167,7 +151,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     permissions[0].equals(android.Manifest.permission.ACCESS_FINE_LOCATION) &&
                     grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
-                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                     // TODO: Consider calling
                     //    ActivityCompat#requestPermissions
                     // here to request the missing permissions, and then overriding
@@ -178,6 +162,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     return;
                 }
                 mMap.setMyLocationEnabled(true);
+                mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
             } else {
                 Toast.makeText(this, "Error de permisos", Toast.LENGTH_LONG).show();
             }
