@@ -35,6 +35,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private final LatLng MARCA = new LatLng(42.237023, -8.717944);
     private final LatLng CENTRO = new LatLng(42.237558, -8.717285);
     Location marcaUbicacion = new Location("mi marca");
+    private static final String CODIGO = "tesoro";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,20 +57,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     .build();
         }
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-                != PackageManager.PERMISSION_GRANTED) {
-
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.CAMERA)) {
-                // Mostrar diálogo explicativo
-            } else {
-                // Solicitar permiso
-                ActivityCompat.requestPermissions(
-                        this,
-                        new String[]{Manifest.permission.CAMERA},
-                        CAMERA_REQUEST_CODE);
-            }
-        }
     }
 
 
@@ -209,7 +196,46 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onMapLongClick(LatLng latLng) {
-        Intent intent = new Intent(getBaseContext(), ScannerActivity.class);
-        startActivityForResult(intent, PREMIO_REQUEST_CODE);
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.CAMERA)) {
+                // Mostrar diálogo explicativo
+            } else {
+                // Solicitar permiso
+                ActivityCompat.requestPermissions(
+                        this,
+                        new String[]{Manifest.permission.CAMERA},
+                        CAMERA_REQUEST_CODE);
+            }
+        }else{
+            Intent intent = new Intent(getBaseContext(), ScannerActivity.class);
+            startActivityForResult(intent, PREMIO_REQUEST_CODE);
+        }
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PREMIO_REQUEST_CODE) {
+
+            if (resultCode == RESULT_OK) {
+                String codigoPremio = data.getStringExtra("PREMIO");
+                compararCodigo(codigoPremio);
+            }
+            if(resultCode == RESULT_CANCELED){
+                //handle cancel
+            }
+        }
+    }
+
+    private void compararCodigo(String codigo){
+        if(codigo.equals(CODIGO)){
+            Toast.makeText(this, "GANASTE", Toast.LENGTH_LONG).show();
+        }else{
+            Toast.makeText(this, "ESE NO ES EL TESORO ESTABLECIDO", Toast.LENGTH_SHORT).show();
+        }
     }
 }
