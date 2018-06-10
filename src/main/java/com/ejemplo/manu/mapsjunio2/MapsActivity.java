@@ -1,6 +1,7 @@
 package com.ejemplo.manu.mapsjunio2;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
@@ -23,12 +24,14 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, GoogleMap.OnMapClickListener {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, GoogleMap.OnMapClickListener, GoogleMap.OnMapLongClickListener {
 
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
     private static final int LOCATION_REQUEST_CODE = 1;
+    private static final int PREMIO_REQUEST_CODE = 4545;
+    private static final int CAMERA_REQUEST_CODE = 2;
     private final LatLng MARCA = new LatLng(42.237023, -8.717944);
     private final LatLng CENTRO = new LatLng(42.237558, -8.717285);
     Location marcaUbicacion = new Location("mi marca");
@@ -52,6 +55,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     .addApi(LocationServices.API)
                     .build();
         }
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.CAMERA)) {
+                // Mostrar diálogo explicativo
+            } else {
+                // Solicitar permiso
+                ActivityCompat.requestPermissions(
+                        this,
+                        new String[]{Manifest.permission.CAMERA},
+                        CAMERA_REQUEST_CODE);
+            }
+        }
     }
 
 
@@ -68,6 +86,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         mMap.setOnMapClickListener(this);
+        mMap.setOnMapLongClickListener(this);
 
         CircleOptions area = new CircleOptions()
                 .center(CENTRO)
@@ -167,6 +186,30 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Toast.makeText(this, "Error de permisos", Toast.LENGTH_LONG).show();
             }
 
+        }else if(requestCode == CAMERA_REQUEST_CODE){
+            if (permissions.length > 0 &&
+                    permissions[0].equals(Manifest.permission.CAMERA) &&
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
+                    // TODO: Consider calling
+                    //    ActivityCompat#requestPermissions
+                    // here to request the missing permissions, and then overriding
+                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                    //                                          int[] grantResults)
+                    // to handle the case where the user grants the permission. See the documentation
+                    // for ActivityCompat#requestPermissions for more details.
+                    return;
+                }
+            } else {
+                Toast.makeText(this, "Error de permisos", Toast.LENGTH_LONG).show();
+            }
         }
+    }
+
+    @Override
+    public void onMapLongClick(LatLng latLng) {
+        Intent intent = new Intent(getBaseContext(), ScannerActivity.class);
+        startActivityForResult(intent, PREMIO_REQUEST_CODE);
     }
 }

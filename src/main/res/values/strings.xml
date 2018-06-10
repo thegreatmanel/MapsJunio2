@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">MapsJunio2</string>
     <string name="title_activity_maps">Map</string>
+    <string name="title_activity_scanner">ScannerActivity</string>
 </resources>
