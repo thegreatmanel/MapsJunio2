@@ -4,6 +4,7 @@ android {
     compileSdkVersion 24
     defaultConfig {
         applicationId "com.ejemplo.manu.mapsjunio2"
+        multiDexEnabled true
         minSdkVersion 15
         targetSdkVersion 24
         versionCode 1
